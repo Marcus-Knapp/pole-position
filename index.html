@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pole Position Elite — Hyundai Championship</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#e60023;--red-glow:#ff1a3d;--red-soft:rgba(230,0,35,.15);
+  --gold:#ffd700;--silver:#c0c0c0;--bronze:#cd7f32;
+  --bg:#08080c;--surface:#111118;--surface2:#1a1a24;--surface3:#22222e;
+  --border:#2a2a38;--muted:#6b6b80;--text:#e8e8f0;--white:#fff;
+  --green:#00e676;--blue:#448aff;
+  --font-display:'Oswald',sans-serif;
+  --font-body:'Barlow',sans-serif;
+  --font-condensed:'Barlow Condensed',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── NOISE OVERLAY ── */
+body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  background-size:128px 128px;opacity:.4}
+
+/* ── HEADER ── */
+.header{position:relative;background:linear-gradient(135deg,#0d0d14 0%,#14141f 100%);border-bottom:1px solid var(--border);overflow:hidden}
+.header::before{content:'';position:absolute;top:-50%;left:-10%;width:120%;height:200%;
+  background:conic-gradient(from 180deg at 50% 50%,transparent 0deg,var(--red) 10deg,transparent 20deg);
+  opacity:.06;animation:headerSpin 20s linear infinite}
+@keyframes headerSpin{to{transform:rotate(360deg)}}
+.header-inner{position:relative;max-width:1400px;margin:0 auto;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.logo{display:flex;align-items:center;gap:14px}
+.logo-icon{width:48px;height:48px;background:var(--red);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;
+  box-shadow:0 0 20px rgba(230,0,35,.4),0 0 60px rgba(230,0,35,.15)}
+.logo-text{font-family:var(--font-display);font-size:clamp(20px,4vw,32px);font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--white)}
+.logo-sub{font-family:var(--font-condensed);font-size:13px;letter-spacing:4px;color:var(--muted);text-transform:uppercase}
+.live-badge{display:flex;align-items:center;gap:8px;background:rgba(230,0,35,.12);border:1px solid rgba(230,0,35,.3);
+  border-radius:100px;padding:8px 18px;font-family:var(--font-condensed);font-weight:600;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--red-glow)}
+.live-dot{width:8px;height:8px;background:var(--red);border-radius:50%;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(230,0,35,.6)}50%{opacity:.6;box-shadow:0 0 0 8px rgba(230,0,35,0)}}
+
+/* ── LAYOUT ── */
+.main{max-width:1400px;margin:0 auto;padding:20px 24px 60px}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;position:relative;overflow:hidden;
+  transition:border-color .3s,transform .2s}
+.stat-card:hover{border-color:rgba(230,0,35,.4);transform:translateY(-2px)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--red),transparent);opacity:0;transition:opacity .3s}
+.stat-card:hover::before{opacity:1}
+.stat-label{font-family:var(--font-condensed);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.stat-value{font-family:var(--font-display);font-size:32px;font-weight:700;color:var(--white)}
+.stat-sub{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* ── PODIUM ── */
+.podium-section{margin-bottom:28px}
+.section-title{font-family:var(--font-display);font-size:16px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:12px;padding:20px 0 0}
+.podium-place{text-align:center;border-radius:16px 16px 0 0;position:relative;overflow:hidden;transition:transform .3s}
+.podium-place:hover{transform:translateY(-4px)}
+.podium-place.first{order:2;background:linear-gradient(180deg,rgba(255,215,0,.1) 0%,rgba(255,215,0,.03) 100%);border:1px solid rgba(255,215,0,.2);border-bottom:none;min-height:220px;flex:1.2}
+.podium-place.second{order:1;background:linear-gradient(180deg,rgba(192,192,192,.08) 0%,rgba(192,192,192,.02) 100%);border:1px solid rgba(192,192,192,.15);border-bottom:none;min-height:180px;flex:1}
+.podium-place.third{order:3;background:linear-gradient(180deg,rgba(205,127,50,.08) 0%,rgba(205,127,50,.02) 100%);border:1px solid rgba(205,127,50,.15);border-bottom:none;min-height:150px;flex:1}
+.podium-rank{font-family:var(--font-display);font-size:48px;font-weight:700;opacity:.15;margin-top:16px}
+.podium-place.first .podium-rank{color:var(--gold)}
+.podium-place.second .podium-rank{color:var(--silver)}
+.podium-place.third .podium-rank{color:var(--bronze)}
+.podium-name{font-family:var(--font-display);font-size:clamp(14px,2.5vw,20px);font-weight:700;color:var(--white);padding:0 12px;margin-top:4px}
+.podium-site{font-family:var(--font-condensed);font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+.podium-laps{font-family:var(--font-display);font-size:clamp(24px,4vw,36px);font-weight:700;margin-top:8px;padding-bottom:20px}
+.podium-place.first .podium-laps{color:var(--gold)}
+.podium-place.second .podium-laps{color:var(--silver)}
+.podium-place.third .podium-laps{color:var(--bronze)}
+.podium-laps span{font-size:14px;font-weight:400;color:var(--muted);margin-left:4px}
+
+/* ── RACE TRACK VISUAL ── */
+.track-section{margin-bottom:28px}
+.track{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;position:relative;overflow:hidden}
+.track::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--red)}
+.track-row{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);position:relative}
+.track-row:last-child{border-bottom:none}
+.track-pos{font-family:var(--font-display);font-size:18px;font-weight:700;width:30px;text-align:center;color:var(--muted)}
+.track-pos.p1{color:var(--gold)}.track-pos.p2{color:var(--silver)}.track-pos.p3{color:var(--bronze)}
+.track-driver{flex:1;min-width:0}
+.track-driver-name{font-family:var(--font-body);font-weight:600;font-size:14px;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track-driver-site{font-family:var(--font-condensed);font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.track-bar-wrap{flex:2;height:28px;background:var(--surface2);border-radius:6px;overflow:hidden;position:relative}
+.track-bar{height:100%;border-radius:6px;transition:width 1.2s cubic-bezier(.22,1,.36,1);position:relative;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;min-width:40px}
+.track-bar.p1{background:linear-gradient(90deg,rgba(230,0,35,.7),var(--red))}
+.track-bar.p2{background:linear-gradient(90deg,rgba(230,0,35,.5),rgba(230,0,35,.7))}
+.track-bar.p3{background:linear-gradient(90deg,rgba(230,0,35,.35),rgba(230,0,35,.55))}
+.track-bar.other{background:linear-gradient(90deg,rgba(230,0,35,.2),rgba(230,0,35,.35))}
+.track-bar span{font-family:var(--font-condensed);font-size:12px;font-weight:700;color:var(--white);text-shadow:0 1px 2px rgba(0,0,0,.5)}
+
+/* ── SITE BREAKDOWN ── */
+.sites-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:28px}
+.site-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;position:relative;overflow:hidden;transition:all .3s}
+.site-card:hover{border-color:rgba(230,0,35,.3);transform:translateY(-2px)}
+.site-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.site-name{font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--white)}
+.site-laps{font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--red-glow)}
+.site-laps span{font-size:11px;color:var(--muted);font-weight:400;margin-left:2px}
+.site-members{font-family:var(--font-condensed);font-size:12px;color:var(--muted);letter-spacing:1px}
+.site-bar{height:4px;background:var(--surface3);border-radius:2px;margin-top:10px;overflow:hidden}
+.site-bar-fill{height:100%;background:var(--red);border-radius:2px;transition:width 1s ease}
+
+/* ── ACTIVITY BREAKDOWN ── */
+.activity-section{margin-bottom:28px}
+.activity-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.activity-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;text-align:center;transition:all .3s}
+.activity-card:hover{border-color:rgba(230,0,35,.3)}
+.activity-icon{font-size:24px;margin-bottom:6px}
+.activity-name{font-family:var(--font-condensed);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.activity-count{font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--white)}
+.activity-pts{font-size:11px;color:var(--muted)}
+
+/* ── LIVE FEED ── */
+.feed-section{margin-bottom:28px}
+.feed{background:var(--surface);border:1px solid var(--border);border-radius:14px;max-height:300px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--surface3) transparent}
+.feed::-webkit-scrollbar{width:6px}.feed::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
+.feed-item{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.03);animation:feedIn .4s ease}
+.feed-item:last-child{border-bottom:none}
+@keyframes feedIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+.feed-dot{width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0}
+.feed-text{font-size:13px;color:var(--text);flex:1}
+.feed-text strong{color:var(--white);font-weight:600}
+.feed-time{font-family:var(--font-condensed);font-size:11px;color:var(--muted);flex-shrink:0}
+
+/* ── MD DASHBOARD ── */
+.md-section{margin-bottom:28px}
+.md-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.md-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px}
+.md-card h4{font-family:var(--font-display);font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.md-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:13px}
+.md-row:last-child{border-bottom:none}
+.md-row .label{color:var(--muted)}
+.md-row .val{font-weight:600;color:var(--white)}
+.md-row .val.up{color:var(--green)}.md-row .val.down{color:var(--red-glow)}
+
+/* ── FOOTER ── */
+.footer{text-align:center;padding:30px 24px;border-top:1px solid var(--border);font-family:var(--font-condensed);font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+.footer a{color:var(--red-glow);text-decoration:none}
+
+/* ── LOADING ── */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:20px}
+.spinner{width:48px;height:48px;border:3px solid var(--surface3);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:var(--font-condensed);font-size:14px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+
+/* ── CONFIG PANEL ── */
+.config-banner{background:linear-gradient(135deg,rgba(230,0,35,.1),rgba(68,138,255,.1));border:1px dashed rgba(230,0,35,.3);border-radius:14px;padding:24px;margin-bottom:28px;text-align:center}
+.config-banner h3{font-family:var(--font-display);font-size:18px;color:var(--white);margin-bottom:8px}
+.config-banner p{font-size:13px;color:var(--muted);max-width:600px;margin:0 auto 16px}
+.config-banner code{background:var(--surface2);padding:2px 8px;border-radius:4px;font-size:12px;color:var(--red-glow)}
+.config-input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 16px;color:var(--white);font-size:14px;width:100%;max-width:500px;margin-bottom:10px;font-family:var(--font-body)}
+.config-input:focus{outline:none;border-color:var(--red)}
+.config-btn{background:var(--red);color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:var(--font-condensed);font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.config-btn:hover{background:var(--red-glow);transform:translateY(-1px)}
+
+/* ── DEMO MODE ── */
+.demo-badge{background:rgba(68,138,255,.12);border:1px solid rgba(68,138,255,.3);color:var(--blue);border-radius:100px;padding:6px 14px;font-family:var(--font-condensed);font-size:11px;letter-spacing:2px;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .header-inner{flex-direction:column;text-align:center}
+  .podium{gap:6px}
+  .podium-place.first,.podium-place.second,.podium-place.third{flex:1}
+  .track-row{flex-wrap:wrap}
+  .track-bar-wrap{flex-basis:100%;order:3}
+  .sites-grid{grid-template-columns:1fr}
+  .activity-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">🏁</div>
+      <div>
+        <div class="logo-text">Pole Position Elite</div>
+        <div class="logo-sub">Hyundai Championship</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center">
+      <div class="live-badge"><span class="live-dot"></span> Live</div>
+      <div id="modeBadge"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main" id="app">
+  <div class="loading" id="loadingState">
+    <div class="spinner"></div>
+    <div class="loading-text">Loading championship data…</div>
+  </div>
+</div>
+
+<div class="footer">
+  Pole Position Elite &mdash; Hyundai Dealership Network &mdash; <a href="#" id="formLink">Submit Entry</a> &mdash; Auto-refreshes every 30s
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  CONFIGURATION — PASTE YOUR GOOGLE SHEET CSV URL
+// ═══════════════════════════════════════════════════
+// After setting up via Google Apps Script, publish the
+// "Leaderboard" sheet as CSV:
+//   File → Share → Publish to web → Leaderboard → CSV
+// Paste that URL below:
+const SHEET_CSV_URL = localStorage.getItem('polepos_csv') || '';
+const FORM_URL = localStorage.getItem('polepos_form') || '';
+
+// Points per activity
+const POINTS = {
+  "New Car Order": 5,
+  "Appointment Booked": 1,
+  "Test Drive": 2,
+  "Finance Proposal": 1,
+  "Part Exchange": 2
+};
+
+const SITES = ["Boston","Kings Lynn","Lincoln","Worksop","Burton"];
+
+const ACTIVITY_ICONS = {
+  "New Car Order": "🚗",
+  "Appointment Booked": "📅",
+  "Test Drive": "🏎️",
+  "Finance Proposal": "💰",
+  "Part Exchange": "🔄"
+};
+
+// ═══════════════════════════════════════════════════
+//  DEMO DATA (used when no CSV URL is configured)
+// ═══════════════════════════════════════════════════
+function generateDemoData() {
+  const names = [
+    {name:"James Carter",site:"Boston"},
+    {name:"Sophie Williams",site:"Kings Lynn"},
+    {name:"Marcus Chen",site:"Lincoln"},
+    {name:"Emma Thompson",site:"Worksop"},
+    {name:"Liam O'Brien",site:"Burton"},
+    {name:"Olivia Hughes",site:"Boston"},
+    {name:"Noah Patel",site:"Kings Lynn"},
+    {name:"Ava Mitchell",site:"Lincoln"},
+    {name:"Ethan Brooks",site:"Worksop"},
+    {name:"Mia Foster",site:"Burton"},
+    {name:"Jack Reynolds",site:"Boston"},
+    {name:"Charlotte Davis",site:"Lincoln"},
+    {name:"Harry Wilson",site:"Kings Lynn"},
+    {name:"Isla Martin",site:"Burton"},
+    {name:"George Taylor",site:"Worksop"}
+  ];
+  return names.map(n => ({
+    name: n.name,
+    site: n.site,
+    laps: Math.floor(Math.random()*40)+5
+  }));
+}
+
+// ═══════════════════════════════════════════════════
+//  DATA FETCHING
+// ═══════════════════════════════════════════════════
+let previousData = [];
+let feedItems = [];
+let isDemo = false;
+
+async function fetchData() {
+  if (!SHEET_CSV_URL) {
+    isDemo = true;
+    return generateDemoData();
+  }
+  isDemo = false;
+  try {
+    const res = await fetch(SHEET_CSV_URL);
+    const txt = await res.text();
+    const rows = txt.split("\n").slice(1);
+    return rows.map(r => {
+      const c = r.split(",");
+      return { name: (c[0]||'').trim(), site: (c[1]||'').trim(), laps: parseInt(c[2]) || 0 };
+    }).filter(r => r.name);
+  } catch(e) {
+    console.error("Fetch error:", e);
+    isDemo = true;
+    return generateDemoData();
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  RENDERING
+// ═══════════════════════════════════════════════════
+function render(data) {
+  data.sort((a,b) => b.laps - a.laps);
+  const maxLaps = data[0]?.laps || 1;
+  const totalLaps = data.reduce((s,d) => s + d.laps, 0);
+  const totalDrivers = data.length;
+
+  // Site aggregations
+  const siteData = {};
+  SITES.forEach(s => siteData[s] = { laps: 0, members: 0 });
+  data.forEach(d => {
+    if (siteData[d.site] !== undefined) {
+      siteData[d.site].laps += d.laps;
+      siteData[d.site].members++;
+    }
+  });
+  const maxSiteLaps = Math.max(...Object.values(siteData).map(s => s.laps), 1);
+
+  // Feed updates
+  if (previousData.length) {
+    data.forEach(d => {
+      const prev = previousData.find(p => p.name === d.name);
+      if (prev && d.laps > prev.laps) {
+        feedItems.unshift({
+          text: `<strong>${d.name}</strong> gained <strong>+${d.laps - prev.laps}</strong> laps`,
+          time: new Date().toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'})
+        });
+      }
+    });
+    feedItems = feedItems.slice(0, 50);
+  }
+
+  // Mode badge
+  document.getElementById('modeBadge').innerHTML = isDemo
+    ? `<span class="demo-badge">⚡ Demo Mode</span>`
+    : '';
+
+  // Form link
+  if (FORM_URL) {
+    document.getElementById('formLink').href = FORM_URL;
+  }
+
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+
+  // ── CONFIG BANNER (if no URL) ──
+  if (!SHEET_CSV_URL) {
+    app.innerHTML += `
+    <div class="config-banner">
+      <h3>🔧 Connect Your Google Sheet</h3>
+      <p>Showing demo data. To connect your live data, paste the published CSV URL from your Google Sheet's <code>Leaderboard</code> tab below.</p>
+      <input type="text" class="config-input" id="csvInput" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv" />
+      <br/>
+      <input type="text" class="config-input" id="formInput" placeholder="Google Form URL (optional)" />
+      <br/>
+      <button class="config-btn" onclick="saveConfig()">Connect &amp; Go Live</button>
+    </div>`;
+  }
+
+  // ── STATS ROW ──
+  const topSite = Object.entries(siteData).sort((a,b) => b[1].laps - a[1].laps)[0];
+  app.innerHTML += `
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Total Laps</div>
+      <div class="stat-value">${totalLaps.toLocaleString()}</div>
+      <div class="stat-sub">Across all sites</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Salespeople</div>
+      <div class="stat-value">${totalDrivers}</div>
+      <div class="stat-sub">${SITES.length} dealerships</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Leader</div>
+      <div class="stat-value">${data[0]?.laps || 0}</div>
+      <div class="stat-sub">${data[0]?.name || '—'}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Top Site</div>
+      <div class="stat-value">${topSite ? topSite[1].laps : 0}</div>
+      <div class="stat-sub">${topSite ? topSite[0] : '—'}</div>
+    </div>
+  </div>`;
+
+  // ── PODIUM ──
+  const top3 = data.slice(0, 3);
+  const podiumClasses = ['second','first','third'];
+  const podiumOrder = [top3[1], top3[0], top3[2]].filter(Boolean);
+  let podiumHTML = '<div class="podium-section"><div class="section-title">Championship Podium</div><div class="podium">';
+  top3.forEach((d, i) => {
+    const cls = i === 0 ? 'first' : i === 1 ? 'second' : 'third';
+    const colors = ['var(--gold)','var(--silver)','var(--bronze)'];
+    podiumHTML += `
+    <div class="podium-place ${cls}">
+      <div class="podium-rank">${i+1}</div>
+      <div class="podium-name">${d.name}</div>
+      <div class="podium-site">${d.site}</div>
+      <div class="podium-laps">${d.laps}<span>laps</span></div>
+    </div>`;
+  });
+  podiumHTML += '</div></div>';
+  app.innerHTML += podiumHTML;
+
+  // ── RACE TRACK ──
+  let trackHTML = '<div class="track-section"><div class="section-title">Race Positions</div><div class="track">';
+  data.slice(0, 10).forEach((d, i) => {
+    const pct = Math.max((d.laps / maxLaps) * 100, 8);
+    const posClass = i === 0 ? 'p1' : i === 1 ? 'p2' : i === 2 ? 'p3' : '';
+    const barClass = i === 0 ? 'p1' : i === 1 ? 'p2' : i === 2 ? 'p3' : 'other';
+    trackHTML += `
+    <div class="track-row">
+      <div class="track-pos ${posClass}">${i+1}</div>
+      <div class="track-driver">
+        <div class="track-driver-name">${d.name}</div>
+        <div class="track-driver-site">${d.site}</div>
+      </div>
+      <div class="track-bar-wrap">
+        <div class="track-bar ${barClass}" style="width:${pct}%"><span>${d.laps}</span></div>
+      </div>
+    </div>`;
+  });
+  trackHTML += '</div></div>';
+  app.innerHTML += trackHTML;
+
+  // ── SITE BREAKDOWN ──
+  let sitesHTML = '<div class="section-title">Site Performance</div><div class="sites-grid">';
+  const sortedSites = Object.entries(siteData).sort((a,b) => b[1].laps - a[1].laps);
+  sortedSites.forEach(([name, info], idx) => {
+    const pct = (info.laps / maxSiteLaps) * 100;
+    const topPerson = data.find(d => d.site === name);
+    sitesHTML += `
+    <div class="site-card">
+      <div class="site-card-header">
+        <div>
+          <div class="site-name">${name}</div>
+          <div class="site-members">${info.members} salespeople</div>
+        </div>
+        <div class="site-laps">${info.laps}<span>laps</span></div>
+      </div>
+      <div style="font-size:12px;color:var(--muted)">Top: <span style="color:var(--white)">${topPerson?.name || '—'}</span> (${topPerson?.laps || 0})</div>
+      <div class="site-bar"><div class="site-bar-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  });
+  sitesHTML += '</div>';
+  app.innerHTML += sitesHTML;
+
+  // ── LIVE FEED ──
+  let feedHTML = '<div class="feed-section"><div class="section-title">Live Activity Feed</div><div class="feed">';
+  if (feedItems.length === 0) {
+    feedHTML += '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">Waiting for activity updates…</div>';
+  } else {
+    feedItems.forEach(f => {
+      feedHTML += `
+      <div class="feed-item">
+        <div class="feed-dot"></div>
+        <div class="feed-text">${f.text}</div>
+        <div class="feed-time">${f.time}</div>
+      </div>`;
+    });
+  }
+  feedHTML += '</div></div>';
+  app.innerHTML += feedHTML;
+
+  // ── MD DASHBOARD ──
+  const avgLaps = totalDrivers ? (totalLaps / totalDrivers).toFixed(1) : 0;
+  const avgPerSite = SITES.length ? (totalLaps / SITES.length).toFixed(1) : 0;
+  let mdHTML = '<div class="md-section"><div class="section-title">MD Dashboard</div><div class="md-grid">';
+  
+  // Overview card
+  mdHTML += `
+  <div class="md-card">
+    <h4>Championship Overview</h4>
+    <div class="md-row"><span class="label">Total Laps</span><span class="val">${totalLaps}</span></div>
+    <div class="md-row"><span class="label">Active Salespeople</span><span class="val">${totalDrivers}</span></div>
+    <div class="md-row"><span class="label">Avg Laps / Person</span><span class="val">${avgLaps}</span></div>
+    <div class="md-row"><span class="label">Avg Laps / Site</span><span class="val">${avgPerSite}</span></div>
+    <div class="md-row"><span class="label">Leader Gap</span><span class="val">${data.length > 1 ? data[0].laps - data[1].laps : 0} laps</span></div>
+  </div>`;
+
+  // Site ranking card
+  mdHTML += `<div class="md-card"><h4>Site Rankings</h4>`;
+  sortedSites.forEach(([name, info], idx) => {
+    const avg = info.members ? (info.laps / info.members).toFixed(1) : 0;
+    mdHTML += `<div class="md-row"><span class="label">${idx+1}. ${name}</span><span class="val">${info.laps} laps (${avg} avg)</span></div>`;
+  });
+  mdHTML += `</div>`;
+
+  // Activity scoring reference
+  mdHTML += `
+  <div class="md-card">
+    <h4>Points Scoring</h4>
+    <div class="md-row"><span class="label">🚗 New Car Order</span><span class="val">5 laps</span></div>
+    <div class="md-row"><span class="label">🏎️ Test Drive</span><span class="val">2 laps</span></div>
+    <div class="md-row"><span class="label">🔄 Part Exchange</span><span class="val">2 laps</span></div>
+    <div class="md-row"><span class="label">📅 Appointment Booked</span><span class="val">1 lap</span></div>
+    <div class="md-row"><span class="label">💰 Finance Proposal</span><span class="val">1 lap</span></div>
+  </div>`;
+
+  mdHTML += '</div></div>';
+  app.innerHTML += mdHTML;
+
+  previousData = JSON.parse(JSON.stringify(data));
+}
+
+// ═══════════════════════════════════════════════════
+//  CONFIG SAVE
+// ═══════════════════════════════════════════════════
+function saveConfig() {
+  const csv = document.getElementById('csvInput')?.value?.trim();
+  const form = document.getElementById('formInput')?.value?.trim();
+  if (csv) {
+    localStorage.setItem('polepos_csv', csv);
+    if (form) localStorage.setItem('polepos_form', form);
+    window.location.reload();
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  MAIN LOOP
+// ═══════════════════════════════════════════════════
+async function update() {
+  try {
+    const data = await fetchData();
+    document.getElementById('loadingState')?.remove();
+    render(data);
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+// Kick off
+update();
+setInterval(update, 30000);
+
+// Simulate feed activity in demo mode
+if (!SHEET_CSV_URL) {
+  setInterval(() => {
+    if (isDemo && previousData.length) {
+      const idx = Math.floor(Math.random() * previousData.length);
+      const gain = Math.floor(Math.random() * 3) + 1;
+      previousData[idx].laps += gain;
+      feedItems.unshift({
+        text: `<strong>${previousData[idx].name}</strong> gained <strong>+${gain}</strong> laps`,
+        time: new Date().toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'})
+      });
+      feedItems = feedItems.slice(0, 50);
+      render(previousData);
+    }
+  }, 8000);
+}
+</script>
+
+</body>
+</html>
